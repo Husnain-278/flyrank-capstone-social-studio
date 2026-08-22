@@ -1,5 +1,9 @@
 from fastapi import FastAPI
 import uvicorn
+from flyrank_capstone_social_studio.api.v1 import api_router
+
+
+
 
 app = FastAPI(
     title="FlyRank Social Media Studio",
@@ -7,6 +11,13 @@ app = FastAPI(
 )
 
 
+app.include_router(
+    api_router,
+    prefix="/api/v1",
+)
+
+
+#health check
 @app.get("/health")
 async def health_check():
     return {"status": "ok"}
