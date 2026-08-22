@@ -18,6 +18,7 @@ from flyrank_capstone_social_studio.models.post import Post
 from flyrank_capstone_social_studio.schemas.variant import (
     VariantGenerateRequest,
     VariantResponse,
+    VariantUpdateRequest,
 )
 from flyrank_capstone_social_studio.services.generation_service import (
     GenerationService,
@@ -32,6 +33,15 @@ from flyrank_capstone_social_studio.services.constraint_service import (
     ConstraintValidationError,
 )
 
+from flyrank_capstone_social_studio.schemas.schedule_slot import (
+    ScheduleSlotCreate,
+    ScheduleSlotResponse,
+)
+
+
+from flyrank_capstone_social_studio.services.schedule_service import (
+    ScheduleService,
+)
 
 
 
@@ -110,3 +120,96 @@ async def generate_variant(
     )
 
     return variant
+
+
+
+
+@router.patch(
+    "/{post_id}/variants/{variant_id}/approve",
+    response_model=VariantResponse,
+)
+async def approve_variant(
+    post_id: UUID,
+    variant_id: UUID,
+    db: AsyncSession = Depends(get_db),
+) -> VariantResponse:
+    variant = await VariantService.approve(
+        db=db,
+        post_id=post_id,
+        variant_id=variant_id,
+    )
+
+    return variant
+
+
+
+
+@router.patch(
+    "/{post_id}/variants/{variant_id}/reject",
+    response_model=VariantResponse,
+)
+async def reject_variant(
+    post_id: UUID,
+    variant_id: UUID,
+    db: AsyncSession = Depends(get_db),
+) -> VariantResponse:
+    variant = await VariantService.reject(
+        db=db,
+        post_id=post_id,
+        variant_id=variant_id,
+    )
+
+    return variant
+
+
+
+
+@router.patch(
+    "/{post_id}/variants/{variant_id}",
+    response_model=VariantResponse,
+)
+async def edit_variant(
+    post_id: UUID,
+    variant_id: UUID,
+    payload: VariantUpdateRequest,
+    db: AsyncSession = Depends(get_db),
+) -> VariantResponse:
+    try:
+        variant = await VariantService.edit(
+            db=db,
+            post_id=post_id,
+            variant_id=variant_id,
+            content=payload.content,
+        )
+    except ConstraintValidationError as error:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(error),
+        )
+
+    return variant
+
+
+
+
+
+
+@router.post(
+    "/{post_id}/variants/{variant_id}/schedule",
+    response_model=ScheduleSlotResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def schedule_variant(
+    post_id: UUID,
+    variant_id: UUID,
+    payload: ScheduleSlotCreate,
+    db: AsyncSession = Depends(get_db),
+) -> ScheduleSlotResponse:
+    schedule_slot = await ScheduleService.create(
+        db=db,
+        post_id=post_id,
+        variant_id=variant_id,
+        scheduled_for=payload.scheduled_for,
+    )
+
+    return schedule_slot

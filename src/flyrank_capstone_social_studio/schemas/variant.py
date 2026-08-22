@@ -2,6 +2,7 @@ from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from flyrank_capstone_social_studio.models.variant import (
     Platform,
@@ -11,6 +12,17 @@ from flyrank_capstone_social_studio.models.variant import (
 
 class VariantGenerateRequest(BaseModel):
     platform: Platform
+
+
+
+
+
+class VariantUpdateRequest(BaseModel):
+    content: str = Field(
+        min_length=1,
+    )
+
+
 
 
 class VariantResponse(BaseModel):
@@ -25,3 +37,6 @@ class VariantResponse(BaseModel):
     model_config = {
         "from_attributes": True,
     }
+
+
+

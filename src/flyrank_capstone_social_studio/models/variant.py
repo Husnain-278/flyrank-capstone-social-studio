@@ -66,3 +66,9 @@ class Variant(Base):
         "Post",
         back_populates="variants",
     )
+
+    schedule_slots = relationship(
+        "ScheduleSlot",
+        back_populates="variant",
+        cascade="all, delete-orphan",
+        )
