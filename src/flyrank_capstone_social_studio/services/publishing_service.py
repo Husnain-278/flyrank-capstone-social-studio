@@ -11,6 +11,9 @@ from flyrank_capstone_social_studio.models.publish_attempt import (
 from flyrank_capstone_social_studio.models.schedule_slot import (
     ScheduleSlot,
 )
+from flyrank_capstone_social_studio.models.variant import (
+    VariantStatus,
+)
 from flyrank_capstone_social_studio.publishers.factory import (
     PublisherFactory,
 )
@@ -38,6 +41,11 @@ class PublishingService:
             raise ValueError("Schedule slot not found.")
 
         variant = schedule_slot.variant
+
+        if variant.status != VariantStatus.APPROVED:
+            raise ValueError(
+                "Only approved variants can be published."
+            )
 
         idempotency_key = (
             f"publish:{variant.id}:{schedule_slot.id}"

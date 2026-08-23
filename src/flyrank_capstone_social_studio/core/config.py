@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     telegram_bot_token: str
     telegram_chat_id: str
 
+
+    schedule_recovery_timeout_seconds: int = 60
+
     timezone: str = "Asia/Karachi"
 
     model_config = SettingsConfigDict(
