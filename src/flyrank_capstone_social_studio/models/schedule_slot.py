@@ -45,3 +45,9 @@ class ScheduleSlot(Base):
         "Variant",
         back_populates="schedule_slots",
     )
+
+    publish_attempts = relationship(
+        "PublishAttempt",
+        back_populates="schedule_slot",
+        cascade="all, delete-orphan",
+    )

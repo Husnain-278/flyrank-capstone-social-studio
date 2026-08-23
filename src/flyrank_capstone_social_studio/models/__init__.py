@@ -6,10 +6,20 @@ from flyrank_capstone_social_studio.models.variant import (
     VariantStatus,
 )
 
+from flyrank_capstone_social_studio.models.publish_attempt import (
+    PublishAttempt,
+    PublishAttemptStatus,
+)
+
+
+
+
 __all__ = [
     "Platform",
     "Post",
     "ScheduleSlot",
     "Variant",
     "VariantStatus",
+    PublishAttempt,
+    PublishAttemptStatus,
 ]

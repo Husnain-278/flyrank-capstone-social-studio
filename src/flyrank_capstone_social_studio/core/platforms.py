@@ -21,4 +21,9 @@ CONSTRAINT_PROFILES: dict[Platform, ConstraintProfile] = {
         tone="concise and engaging",
         max_hashtags=3,
     ),
+    Platform.LINKEDIN: ConstraintProfile(
+        max_length=3000,
+        tone="professional and engaging",
+        max_hashtags=5,
+    ),
 }

@@ -20,6 +20,9 @@ class Settings(BaseSettings):
 
     celery_broker_url: str
 
+    telegram_bot_token: str
+    telegram_chat_id: str
+
     timezone: str = "Asia/Karachi"
 
     model_config = SettingsConfigDict(

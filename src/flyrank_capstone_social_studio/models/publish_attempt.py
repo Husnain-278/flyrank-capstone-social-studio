@@ -6,31 +6,34 @@ from sqlalchemy import DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from flyrank_capstone_social_studio.core.database import Base
+from flyrank_capstone_social_studio.models.variant import Platform
 
 
-class Platform(StrEnum):
-    TELEGRAM = "telegram"
-    X = "x"
-    LINKEDIN = "linkedin"
+class PublishAttemptStatus(StrEnum):
+    PENDING = "pending"
+    SUCCESS = "success"
+    FAILED = "failed"
 
 
-class VariantStatus(StrEnum):
-    DRAFT = "draft"
-    APPROVED = "approved"
-    REJECTED = "rejected"
-    PUBLISHED = "published"
-
-
-class Variant(Base):
-    __tablename__ = "variants"
+class PublishAttempt(Base):
+    __tablename__ = "publish_attempts"
 
     id: Mapped[UUID] = mapped_column(
         primary_key=True,
         default=uuid4,
     )
 
-    post_id: Mapped[UUID] = mapped_column(
-        ForeignKey("posts.id", ondelete="CASCADE"),
+    schedule_slot_id: Mapped[UUID] = mapped_column(
+        ForeignKey(
+            "schedule_slots.id",
+            ondelete="CASCADE",
+        ),
+        nullable=False,
+    )
+
+    idempotency_key: Mapped[str] = mapped_column(
+        String(255),
+        unique=True,
         nullable=False,
     )
 
@@ -44,10 +47,20 @@ class Variant(Base):
         nullable=False,
     )
 
-    status: Mapped[VariantStatus] = mapped_column(
+    status: Mapped[PublishAttemptStatus] = mapped_column(
         String(50),
-        default=VariantStatus.DRAFT,
+        default=PublishAttemptStatus.PENDING,
         nullable=False,
+    )
+
+    external_id: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True,
+    )
+
+    error_message: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True,
     )
 
     created_at: Mapped[datetime] = mapped_column(
@@ -63,13 +76,7 @@ class Variant(Base):
         nullable=False,
     )
 
-    post = relationship(
-        "Post",
-        back_populates="variants",
-    )
-
-    schedule_slots = relationship(
+    schedule_slot = relationship(
         "ScheduleSlot",
-        back_populates="variant",
-        cascade="all, delete-orphan",
-        )
+        back_populates="publish_attempts",
+    )
